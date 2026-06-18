@@ -1,16 +1,17 @@
 <?php
 /**
- * register.php
+ * secure-app/register.php
  *
  * Demonstrates defense-in-depth: HTML5/JS validation for UX, plus
  * mandatory server-side validation + sanitization, plus a prepared
  * INSERT so the data layer can never be reached with raw input.
  */
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/auth.php';
 
 // Redirect if already logged in
-if (isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+if (is_secure_authenticated()) {
+    header('Location: dashboard.php');
     exit;
 }
 
@@ -20,8 +21,8 @@ $old = ['username' => ''];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF Verification
     $token = $_POST['csrf_token'] ?? '';
-    if (!verify_csrf_token($token)) {
-        $errors[] = 'Security check failed. Please refresh the page and try again.';
+    if (!verify_secure_csrf_token($token)) {
+        $errors[] = 'Security verification failed. Please refresh the page and try again.';
     } else {
         // ---- SERVER-SIDE VALIDATION ----
         // Never trust the client. JS validation can be disabled; this is
@@ -71,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'role'     => $role,
                 ]);
 
-                set_flash_message('success', 'Registration successful! Please log in.');
+                set_secure_flash_message('success', 'Registration successful! Please log in.');
                 header('Location: login.php?registered=1');
                 exit;
             }
@@ -83,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Register - Secure Application Demo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -200,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="card">
-        <a href="index.php" style="color: var(--link); text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 16px; font-weight: 500;">&larr; Back to Dashboard</a>
+        <a href="dashboard.php" style="color: var(--link); text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 16px; font-weight: 500;">&larr; Back to Dashboard</a>
         <h1>Create Account</h1>
         <p class="subtitle">Sign up to start managing your posts</p>
 
@@ -210,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Client-side validation (UX only, never trusted server-side) -->
         <form method="POST" action="register.php">
-            <?= csrf_field() ?>
+            <?= secure_csrf_field() ?>
 
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="Enter Username" required minlength="3" maxlength="20"

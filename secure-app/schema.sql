@@ -1,11 +1,9 @@
--- Database setup script for the blog application
+-- Schema for the secure-app database
 
--- Create the database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS `blog` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `blog_secure` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `blog_secure`;
 
-USE `blog`;
-
--- Create users table
+-- Create users table with a role column
 CREATE TABLE IF NOT EXISTS `users` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `username` VARCHAR(50) NOT NULL UNIQUE,

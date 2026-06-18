@@ -8,6 +8,13 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Restrict access to admin
+if (($_SESSION['role'] ?? 'user') !== 'admin') {
+    set_flash_message('error', 'You do not have permission to delete posts.');
+    header('Location: index.php');
+    exit;
+}
+
 // Strictly enforce POST request method for destructive actions (pro-level security)
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     set_flash_message('error', 'Invalid action. Post deletion must be sent via a secure form POST request.');

@@ -36,6 +36,15 @@ try {
          </div>");
 }
 
+/**
+ * Returns the global PDO connection instance
+ */
+function getDbConnection() {
+    global $pdo;
+    return $pdo;
+}
+
+
 /* ==========================================
    SECURITY HELPERS (CSRF Protection)
    ========================================== */

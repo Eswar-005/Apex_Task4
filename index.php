@@ -40,8 +40,10 @@ try {
         $stmt->execute();
         $posts = $stmt->fetchAll();
     } else {
-        // Count total posts
-        $total_posts = $pdo->query("SELECT COUNT(*) FROM posts")->fetchColumn();
+        // Count total posts using a prepared statement for consistency
+        $count_stmt = $pdo->prepare("SELECT COUNT(*) FROM posts");
+        $count_stmt->execute();
+        $total_posts = $count_stmt->fetchColumn();
         
         $total_pages = ceil($total_posts / $limit);
         if ($total_pages < 1) {
@@ -92,7 +94,7 @@ require_once 'header.php';
         <h1>Stories & Ideas</h1>
         <p>A secure CRUD space to write, read, edit, and delete thoughts.</p>
     </div>
-    <?php if ($is_logged_in): ?>
+    <?php if ($is_logged_in && ($is_admin || $is_editor)): ?>
         <a href="create.php" class="btn btn-primary">+ New Post</a>
     <?php endif; ?>
 </div>
@@ -149,17 +151,19 @@ require_once 'header.php';
                     <div class="post-content"><?php echo highlight_search($post['content'], $search); ?></div>
                 </div>
                 
-                <?php if ($is_logged_in): ?>
+                <?php if ($is_logged_in && ($is_admin || $is_editor)): ?>
                     <div class="post-actions">
-                        <a href="edit.php?id=<?php echo $post['id']; ?>" class="btn btn-secondary btn-sm">Edit</a>
+                        <a href="edit.php?id=<?php echo htmlspecialchars($post['id']); ?>" class="btn btn-secondary btn-sm">Edit</a>
                         
+                        <?php if ($is_admin): ?>
                         <!-- Secure POST-based Deletion Form -->
                         <form action="delete.php" method="POST" class="inline-form" 
                               onsubmit="return confirm('Are you sure you want to delete this post?');">
                             <?php echo csrf_field(); ?>
-                            <input type="hidden" name="id" value="<?php echo $post['id']; ?>">
+                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($post['id']); ?>">
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                         </form>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </div>

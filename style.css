@@ -1,5 +1,5 @@
 /* Imports Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 /* Color Variables and Design Tokens */
 :root {
@@ -751,4 +751,274 @@ mark.search-highlight {
     opacity: 0.5;
     margin: 0 0.25rem;
 }
+
+/* Real-time Validation styling */
+.form-control.touched:invalid {
+    border-color: #f43f5e;
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
+}
+
+.form-control.touched:valid {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Glassmorphic requirements card styling */
+.password-requirements, .username-requirements {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: var(--transition-smooth);
+}
+
+.requirement-item {
+    transition: var(--transition-smooth);
+}
+
+.character-counter {
+    transition: var(--transition-smooth);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Modal Content Container */
+.modal-content.glass-panel {
+    max-width: 500px;
+    width: 90%;
+    max-height: 80%;
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    margin-bottom: 0; /* Override default glass-panel margin */
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.close-btn:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    overflow-y: auto;
+    flex-grow: 1;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    padding-right: 0.5rem;
+}
+
+.modal-body h4 {
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 1rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Security Advisor Info Card */
+.security-advisor-card {
+    background: rgba(99, 102, 241, 0.04);
+    border: 1px dashed rgba(99, 102, 241, 0.25);
+    border-radius: 12px;
+    padding: 1.25rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: var(--transition-smooth);
+}
+
+/* Role Badges inside Navbar */
+.role-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    margin-left: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+    display: inline-block;
+    vertical-align: middle;
+}
+.role-admin {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.3);
+    color: #fda4af;
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.1);
+}
+.role-editor {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: #ddd6fe;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.1);
+}
+.role-user {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #bfdbfe;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+}
+
+/* ==========================================
+   MOCKUP DESIGN SPECIFICATION OVERRIDES
+   ========================================== */
+
+/* 1. Background Purple Radial Glow */
+body.auth-page {
+    background: radial-gradient(circle at 30% 30%, #1b1740 0%, #0a0a16 100%) !important;
+    background-attachment: fixed !important;
+}
+
+/* 2. Glassmorphic Card outline & shadow */
+.auth-page .auth-card {
+    background: #15172c !important;
+    border: 1px solid rgba(139, 92, 246, 0.28) !important;
+    border-radius: 24px !important;
+    padding: 40px 36px !important;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.08), 0 0 20px rgba(139, 92, 246, 0.12) !important;
+    max-width: 420px !important;
+    transition: var(--transition-smooth);
+}
+.auth-page .auth-card:hover {
+    border-color: rgba(139, 92, 246, 0.45) !important;
+    box-shadow: 0 10px 40px rgba(139, 92, 246, 0.12), 0 0 25px rgba(139, 92, 246, 0.22) !important;
+}
+
+/* 3. Typography (Baloo 2 display face) */
+.auth-page .auth-header h2 {
+    font-family: 'Baloo 2', 'Outfit', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 2rem !important;
+    margin-bottom: 0.5rem !important;
+    color: #ffffff !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+}
+.auth-page .auth-header p {
+    color: #8b90ad !important;
+    font-size: 0.95rem !important;
+}
+
+/* 4. Small, close labels */
+.auth-page .form-label {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #c7cae3 !important;
+    margin-bottom: 8px !important;
+}
+
+/* 5. Inputs (Dark, 12px radius, focused glow) */
+.auth-page .form-control {
+    background: #0e0f20 !important;
+    border: 1px solid rgba(139, 92, 246, 0.2) !important;
+    border-radius: 12px !important;
+    color: #f8fafc !important;
+    font-size: 0.95rem !important;
+    padding: 0.75rem 1rem !important;
+    transition: var(--transition-smooth);
+}
+.auth-page .form-control::placeholder {
+    color: #5d6080 !important;
+}
+.auth-page .form-control:focus {
+    outline: none !important;
+    border-color: #5b5ff0 !important;
+    box-shadow: 0 0 0 4px rgba(91, 95, 240, 0.25) !important;
+}
+
+/* 6. Form Button (Indigo-to-purple diagonal gradient) */
+.auth-page .btn-primary {
+    background: linear-gradient(135deg, #5b5ff0 0%, #9d4ff0 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    padding: 0.75rem 1.5rem !important;
+    box-shadow: 0 4px 15px rgba(91, 95, 240, 0.3) !important;
+    transition: var(--transition-smooth);
+}
+.auth-page .btn-primary:hover {
+    filter: brightness(1.1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(91, 95, 240, 0.45) !important;
+}
+
+/* 7. Footer line periwinkle link */
+.auth-page .form-footer {
+    margin-top: 22px !important;
+    font-size: 0.875rem !important;
+    color: #5d6080 !important;
+}
+.auth-page .form-footer a {
+    color: #9b8cf9 !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+}
+.auth-page .form-footer a:hover {
+    text-decoration: underline !important;
+}
+
+
+
 

@@ -1,44 +1,57 @@
 <?php
-require_once 'config.php';
+// secure-app/dashboard.php - Secure Dashboard with UI-level Access Controls (RBAC)
+require_once 'config/database.php';
+require_once 'includes/auth.php';
 
-$is_logged_in = isset($_SESSION['user_id']);
-$username = $_SESSION['username'] ?? '';
-$is_admin = ($_SESSION['role'] ?? 'user') === 'admin';
-$is_editor = ($_SESSION['role'] ?? 'user') === 'editor';
+$success = get_secure_flash_message('success');
+$error = get_secure_flash_message('error');
 
-// Generate initials for profile avatar
+$is_logged_in = is_secure_authenticated();
+$user_role = $_SESSION['secure_role'] ?? 'user';
+$username = $_SESSION['secure_username'] ?? '';
+
+// Check roles for rendering
+$is_admin = ($user_role === 'admin');
+$is_editor = ($user_role === 'editor');
+$can_write = ($is_admin || $is_editor);
+
+// Fetch posts
+$posts = [];
+try {
+    $stmt = $pdo->prepare("SELECT * FROM posts ORDER BY created_at DESC");
+    $stmt->execute();
+    $posts = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $error = 'Database error: Could not fetch posts.';
+}
+
 $avatar_initial = '';
 if ($is_logged_in && !empty($username)) {
     $avatar_initial = strtoupper(substr($username, 0, 1));
 }
-
-// Default page title
-$title = $page_title ?? 'DevBlog - Share Your Thoughts';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($title); ?></title>
-    <link rel="stylesheet" href="style.css">
+    <title>Dashboard - Secure Application Demo</title>
+    <link rel="stylesheet" href="../style.css">
 </head>
-<body class="<?php echo htmlspecialchars($body_class ?? ''); ?>">
+<body>
     <div class="navbar">
         <div class="navbar-container">
-            <a href="index.php" class="brand">
-                <span class="brand-icon">📝</span> DevBlog
-            </a>
+            <a href="dashboard.php" class="brand">📝 DevBlog <span style="font-size: 0.8rem; background: #818cf8; color: #fff; padding: 2px 6px; border-radius: 4px; margin-left: 8px;">SECURE</span></a>
             <ul class="nav-links">
                 <?php if ($is_logged_in): ?>
                     <li class="nav-user">
-                        <div class="user-avatar" title="<?php echo htmlspecialchars($username); ?> (Role: <?php echo htmlspecialchars($_SESSION['role'] ?? 'user'); ?>)">
+                        <div class="user-avatar" title="<?php echo htmlspecialchars($username); ?> (Role: <?php echo htmlspecialchars($user_role); ?>)">
                             <?php echo htmlspecialchars($avatar_initial); ?>
                         </div>
-                        <span class="user-name">Hello, <strong><?php echo htmlspecialchars($username); ?></strong> <span class="role-badge role-<?php echo htmlspecialchars($_SESSION['role'] ?? 'user'); ?>"><?php echo ucfirst(htmlspecialchars($_SESSION['role'] ?? 'user')); ?></span></span>
+                        <span class="user-name">Hello, <strong><?php echo htmlspecialchars($username); ?></strong> (<?php echo htmlspecialchars($user_role); ?>)</span>
                     </li>
-                    <?php if ($is_admin || $is_editor): ?>
-                        <li><a href="create.php" class="btn btn-primary btn-sm">Create Post</a></li>
+                    <?php if ($can_write): ?>
+                        <li><span class="btn btn-primary btn-sm" onclick="alert('Creating new posts is stubbed out for secure-app layout structure demo.')">+ New Post</span></li>
                     <?php endif; ?>
                     <li><a href="logout.php" class="btn btn-secondary btn-sm">Logout</a></li>
                 <?php else: ?>
@@ -49,6 +62,65 @@ $title = $page_title ?? 'DevBlog - Share Your Thoughts';
         </div>
     </div>
 
+    <div class="container">
+        <!-- Alert Feedbacks -->
+        <?php if (!empty($success)): ?>
+            <div class="alert alert-success" style="margin-top: 1rem;">
+                <span>✅</span> <?php echo htmlspecialchars($success); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-danger" style="margin-top: 1rem;">
+                <span>⚠️</span> <?php echo htmlspecialchars($error); ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>Stories & Ideas</h1>
+                <p>Fully secure space utilizing prepared statements, stateful CSRF mitigation, and strict RBAC layers.</p>
+            </div>
+        </div>
+
+        <?php if (empty($posts)): ?>
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>No posts found</h3>
+                <p>Register or log in with admin/editor permissions to seed or add new posts.</p>
+            </div>
+        <?php else: ?>
+            <div class="posts-grid">
+                <?php foreach ($posts as $post): ?>
+                    <div class="post-card">
+                        <div>
+                            <div class="post-meta">
+                                <span>📅</span> 
+                                <?php echo htmlspecialchars($post['created_at']); ?>
+                            </div>
+                            <h2 class="post-title"><?php echo htmlspecialchars($post['title']); ?></h2>
+                            <div class="post-content"><?php echo htmlspecialchars($post['content']); ?></div>
+                        </div>
+                        
+                        <?php if ($is_logged_in && ($is_admin || $is_editor)): ?>
+                            <div class="post-actions">
+                                <span class="btn btn-secondary btn-sm" onclick="alert('Editing posts is a stub demo.')">Edit</span>
+                                
+                                <?php if ($is_admin): ?>
+                                <!-- Secure POST-based Deletion Form with CSRF Protection -->
+                                <form action="admin/delete_post.php" method="POST" class="inline-form" 
+                                      onsubmit="return confirm('Are you sure you want to delete this post?');">
+                                    <?php echo secure_csrf_field(); ?>
+                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($post['id']); ?>">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     <!-- Glassmorphic Login Modal Prompt Overlay -->
     <div class="modal-overlay" id="login-modal-overlay">
         <div class="modal-card">
@@ -57,7 +129,7 @@ $title = $page_title ?? 'DevBlog - Share Your Thoughts';
             <p class="subtitle">Enter your credentials to manage your posts</p>
 
             <form method="POST" action="login.php" novalidate id="modal-login-form">
-                <?= csrf_field() ?>
+                <?= secure_csrf_field() ?>
 
                 <label for="modal-username">Username</label>
                 <input type="text" id="modal-username" name="username" placeholder="Enter Username" required>
@@ -243,5 +315,5 @@ $title = $page_title ?? 'DevBlog - Share Your Thoughts';
         }
     });
     </script>
-
-    <div class="container">
+</body>
+</html>
